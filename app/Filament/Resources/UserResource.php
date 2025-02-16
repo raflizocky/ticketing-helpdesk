@@ -12,6 +12,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -23,7 +28,50 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+
+                //card
+                Section::make()
+                    ->schema([
+
+                        // Name
+                        TextInput::make('name')
+                            ->label('User Name')
+                            ->placeholder('Enter full name')
+                            ->required(),
+
+                        // Email
+                        TextInput::make('email')
+                            ->label('Email Address')
+                            ->placeholder('Enter email')
+                            ->email()
+                            ->unique('users', 'email')
+                            ->required(),
+
+                        // Password
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->placeholder('Enter password')
+                            ->password()
+                            ->required()
+                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                            ->revealable(),
+
+                        // Role Selection
+                        Select::make('role')
+                            ->label('User Role')
+                            ->options([
+                                'admin' => 'Admin',
+                                'employee' => 'Employee',
+                            ])
+                            ->required(),
+
+                        // Department Selection
+                        Select::make('department_id')
+                            ->label('Department')
+                            ->relationship('department', 'name')
+                            ->required(),
+
+                    ])
             ]);
     }
 
