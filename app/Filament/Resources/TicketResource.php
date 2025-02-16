@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
 
 class TicketResource extends Resource
 {
@@ -31,18 +33,59 @@ class TicketResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')->sortable(),
+                TextColumn::make('subject')->searchable(),
+                TextColumn::make('priority')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Urgent' => 'danger',
+                        'Middle' => 'warning',
+                        'Not urgent' => 'success',
+                    })
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Open' => 'primary',
+                        'In Progress' => 'warning',
+                        'Resolved' => 'success',
+                        'Closed' => 'gray',
+                    })
+                    ->searchable(),
+                TextColumn::make('department.name')
+                    ->label('Department')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('creator.name')
+                    ->label('Created By')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('assignee.name')
+                    ->label('Assigned To')
+                    ->sortable()
+                    ->searchable()
+                    ->placeholder('Not assigned'),
+                TextColumn::make('due_date')
+                    ->label('Due Date')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                // Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -57,8 +100,8 @@ class TicketResource extends Resource
     {
         return [
             'index' => Pages\ListTickets::route('/'),
-            'create' => Pages\CreateTicket::route('/create'),
-            'edit' => Pages\EditTicket::route('/{record}/edit'),
+            // 'create' => Pages\CreateTicket::route('/create'),
+            // 'edit' => Pages\EditTicket::route('/{record}/edit'),
         ];
     }
 }
