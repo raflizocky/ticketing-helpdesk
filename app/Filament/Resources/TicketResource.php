@@ -12,8 +12,12 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 
 class TicketResource extends Resource
 {
@@ -25,7 +29,57 @@ class TicketResource extends Resource
     {
         return $form
             ->schema([
-                //
+
+                Section::make('Ticket Details')
+                    ->schema([
+                        TextInput::make('subject')
+                            ->label('Ticket Subject')
+                            ->placeholder('Enter ticket subject')
+                            ->required(),
+
+                        RichEditor::make('description')
+                            ->label('Description')
+                            ->placeholder('Enter detailed description')
+                            ->required(),
+
+                        Select::make('priority')
+                            ->label('Priority')
+                            ->options([
+                                'Urgent' => 'Urgent',
+                                'Middle' => 'Middle',
+                                'Not urgent' => 'Not urgent',
+                            ])
+                            ->required(),
+
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'Open' => 'Open',
+                                'In Progress' => 'In Progress',
+                                'Resolved' => 'Resolved',
+                                'Closed' => 'Closed',
+                            ])
+                            ->required(),
+
+                        Select::make('department_id')
+                            ->label('Department')
+                            ->relationship('department', 'name')
+                            ->required(),
+
+                        Select::make('created_by')
+                            ->label('Created By')
+                            ->relationship('creator', 'name')
+                            ->required(),
+
+                        Select::make('assigned_to')
+                            ->label('Assigned To')
+                            ->relationship('assignee', 'name')
+                            ->nullable(),
+
+                        DateTimePicker::make('due_date')
+                            ->label('Due Date')
+                            ->nullable(),
+                    ]),
             ]);
     }
 
@@ -80,12 +134,12 @@ class TicketResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                // Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -100,8 +154,8 @@ class TicketResource extends Resource
     {
         return [
             'index' => Pages\ListTickets::route('/'),
-            // 'create' => Pages\CreateTicket::route('/create'),
-            // 'edit' => Pages\EditTicket::route('/{record}/edit'),
+            'create' => Pages\CreateTicket::route('/create'),
+            'edit' => Pages\EditTicket::route('/{record}/edit'),
         ];
     }
 }
