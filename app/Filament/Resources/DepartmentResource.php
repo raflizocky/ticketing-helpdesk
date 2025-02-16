@@ -12,6 +12,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 
 class DepartmentResource extends Resource
 {
@@ -23,7 +27,20 @@ class DepartmentResource extends Resource
     {
         return $form
             ->schema([
-                //
+
+                // card
+                Section::make()
+                    ->schema([
+
+                        // Name
+                        TextInput::make('name')
+                            ->label('Department Name')
+                            ->placeholder('Enter department name')
+                            ->unique()
+                            ->required(),
+
+
+                    ])
             ]);
     }
 
