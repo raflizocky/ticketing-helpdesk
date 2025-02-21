@@ -29,4 +29,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(TicketReplies::class);
     }
+
+    public function hasRole($role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function hasAnyRole($roles): bool
+    {
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+        return $this->role === $roles;
+    }
 }
